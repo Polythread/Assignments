@@ -7,6 +7,3 @@
 export function isMultipleOf(num: number, divisor: number): boolean {
   return num % divisor === 0;
 }
-
-console.log(isMultipleOf(15, 5)); // true
-console.log(isMultipleOf(15, 4)); // false
