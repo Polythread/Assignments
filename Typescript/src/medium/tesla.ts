@@ -15,3 +15,29 @@
 // Example Output
 // "This is a 2020 Tesla Model S."
 
+export interface Vehicle {
+  make: string;
+  model: string;
+  year: number;
+  getDetails(): string;
+}
+
+export class Car implements Vehicle {
+  make: string;
+  model: string;
+  year: number;
+
+  constructor(make: string, model: string, year: number) {
+    this.make = make;
+    this.model = model;
+    this.year = year;
+  }
+
+  getDetails(): string {
+    return `This is a ${this.year} ${this.make} ${this.model}.`;
+  }
+}
+
+const car = new Car("Tesla", "Model S", 2020);
+
+console.log(car.getDetails());
