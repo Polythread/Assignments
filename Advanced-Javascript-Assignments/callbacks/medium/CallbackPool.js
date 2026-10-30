@@ -7,13 +7,37 @@
 // As tasks complete, queued tasks should start automatically.
 // Each task must invoke its callback with its result when finished.
 
+const batchProcess = require("./batchProcess");
 
 class CallbackPool {
-  constructor(limit) {}
+  constructor(limit) {
+    this.limit = limit;
+    this.running = 0;
+    this.queue = [];
+  }
 
-  run(task, onComplete) {}
+  run(task, onComplete) {
+    this.queue.push({ task, onComplete });
+    this._next();
+  }
 
-  _next() {}
+  _next() {
+    if (this.running >= this.limit || this.queue.length === 0) {
+      return;
+    }
+
+    const { task, onComplete } = this.queue.shift();
+
+    this.running++;
+
+    task((result) => {
+      onComplete(result);
+      this.running--;
+      this._next();
+    });
+
+    this._next();
+  }
 }
 
 module.exports = CallbackPool;
