@@ -8,14 +8,43 @@
 // The concurrency limit can be updated dynamically while the system is running.
 //
 // Each task must invoke its callback when finished.
+
 class DynamicPriorityQueue {
-  constructor(concurrency) {}
+  constructor(concurrency) {
+    this.concurrency = concurrency;
+    this.running = 0;
+    this.queue = [];
+  }
 
-  setLimit(newLimit) {}
+  setLimit(newLimit) {
+    if (newLimit <= 0) return;
 
-  add(task, priority, onComplete) {}
+    this.concurrency = newLimit;
+    this.runNext();
+  }
 
-  runNext() {}
+  add(task, priority, onComplete) {
+    this.queue.push({ task, priority, onComplete });
+
+    this.queue.sort((a, b) => b.priority - a.priority);
+
+    this.runNext();
+  }
+
+  runNext() {
+    while (this.running < this.concurrency && this.queue.length > 0) {
+      const { task, onComplete } = this.queue.shift();
+
+      this.running++;
+
+      task((err, result) => {
+        onComplete(err, result);
+
+        this.running--;
+        this.runNext();
+      });
+    }
+  }
 }
 
 module.exports = DynamicPriorityQueue;
